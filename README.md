@@ -30,6 +30,7 @@
 
 ### 완성된 모델
 
+![image](https://user-images.githubusercontent.com/119660065/205816305-adb263f9-b449-4201-b072-019c72c04e40.png)
 
 
 
