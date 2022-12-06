@@ -95,11 +95,7 @@
 
 1. Request / Response
 
-
-
-1. Circuit Breaker
-
-fooddelivery 의 Order.java
+order 의 Order.java 에서 주문 직후 Payment Proxy (PaymentService) 의 pay (결제) 호출 - Sync (Req/Res)
 
     @PostPersist
     public void onPostPersist(){
@@ -111,6 +107,88 @@ fooddelivery 의 Order.java
 
         OrderApplication.applicationContext.getBean(fooddelivery.external.PaymentService.class)
             .pay(getId(), payment);
+
+
+external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
+
+    @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceFallback.class)
+    public interface PaymentService {
+        @RequestMapping(method= RequestMethod.PUT, path="/payments/{id}/pay")
+        public void pay(@PathVariable("id") Long id, @RequestBody Payment payment);
+    }
+    
+    
+=> 
+
+- order 만 구동하고 payment 를 내린 상태에서는 주문 실패됨
+
+http :8081/orders customerId="lee" qty=1 price=8000 address="seoul" foodId=1
+HTTP/1.1 500 
+Connection: close
+Content-Type: application/json
+Date: Tue, 06 Dec 2022 06:12:02 GMT
+Transfer-Encoding: chunked
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+
+{
+    "error": "Internal Server Error",
+    "message": "",
+    "path": "/orders",
+    "status": 500,
+    "timestamp": "2022-12-06T06:12:02.499+00:00"
+}
+
+- payment 구동 후 주문 성공
+
+http :8081/orders customerId="lee" qty=1 price=8000 address="seoul" foodId=1
+HTTP/1.1 201 
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 06 Dec 2022 06:16:38 GMT
+Keep-Alive: timeout=60
+Location: http://localhost:8081/orders/2
+Transfer-Encoding: chunked
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+
+{
+    "_links": {
+        "order": {
+            "href": "http://localhost:8081/orders/2"
+        },
+        "self": {
+            "href": "http://localhost:8081/orders/2"
+        }
+    },
+    "address": "seoul",
+    "customerId": "lee",
+    "foodId": 1,
+    "price": 8000,
+    "qty": 1,
+    "status": "주문됨"
+}
+
+
+1. Circuit Breaker
+
+- 
+    
+
+
+
+
+    @PrePersist
+    public void onPrePersist(){
+        
+    ...    
+        try {
+            Thread.currentThread().sleep((long) (400 + Math.random() * 250));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
 
 1. Gateway / Ingress
