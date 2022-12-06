@@ -99,6 +99,18 @@
 
 1. Circuit Breaker
 
+fooddelivery 의 Order.java
+
+    @PostPersist
+    public void onPostPersist(){
+        
+        fooddelivery.external.Payment payment = new fooddelivery.external.Payment();
+        payment.setOrderId(getId());
+        if (getPrice()!=null)
+            payment.setPrice(getPrice());
+
+        OrderApplication.applicationContext.getBean(fooddelivery.external.PaymentService.class)
+            .pay(getId(), payment);
 
 
 1. Gateway / Ingress
