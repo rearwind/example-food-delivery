@@ -44,18 +44,29 @@
     - 주문이 되면 주문 내역이 입점상점주인에게 주문정보가 전달되고 (copy order info), 해당 음식(food)의 재고가 주문수량만큼 줄어든다. (decrease) (ok)
 
 
+![image](https://user-images.githubusercontent.com/119660065/205819429-b42c85c4-eb65-4d08-a29e-f2ac01a5781c.png)
+
+    - 상점주는 주문을 수락하거나 거절할 수 있다 (accept 가 true 면 orderAccepted, false 면 orderRejected) (ok)
+    - 상점주는 요리시작때와 완료 시점에 시스템에 상태를 입력한다 (요리시작 - start, 요리완료 - finish) (ok)
+    - 요리가 완료되면 고객의 지역 인근의 라이더들에 의해 배송건 조회가 가능하다 (start command 에 배송정보 복사, finish 에 상태 업데이트) (ok)
+    - 라이더가 해당 요리를 Pick한 후, 앱을 통해 통보한다. (pick command 시 picked(배달시작) 이벤트 발생 => 카톡 알림)
+    - 고객이 주문상태를 중간중간 조회한다. (cqrs(MyPage) 이용) (ok)
+    - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (notification으로 주문수락, 주문거절, 요리시작, 요리완료, 배달시작, 주문취소(payCancelled) 시 카톡 알림) (ok)
+    - 고객이 요리를 배달 받으면 배송확인 버튼을 탭하여, 모든 거래가 완료된다 (confirmdelivered command 로 delivered 이벤트 발생, 거래 완료) (ok)
+    
+    
+    
+    
+    - 고객은 아직 요리가 시작되지 않은 주문은 취소할 수 있다
+    - 주문 취소 시 해당 음식(food)의 재고가 주문수량만큼 늘어난다(원복된다).
 
 
-    - 고객이 주문을 취소할 수 있다 (ok)
-    - 주문이 취소되면 배달이 취소된다 (ok)
-    - 고객이 주문상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok) 
-    - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (?)
 
 
-![image](https://user-images.githubusercontent.com/487999/79684176-4e4c7800-826a-11ea-8deb-b7b053e5d7c6.png)
     
     - 수정된 모델은 모든 요구사항을 커버함.
-    
+
+
 
 ### 비기능 요구사항에 대한 검증
 
