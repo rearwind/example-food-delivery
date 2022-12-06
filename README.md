@@ -60,8 +60,7 @@
     - 고객은 아직 요리가 시작되지 않은 주문은 취소할 수 있다 (cancel -> 결제취소 -> 요리취소(cancel) 및 재고증가(increase) 및 알림) (ok)
     - 주문 취소 시 해당 음식(food)의 재고가 주문수량만큼 늘어난다(원복된다). (ok)
     
-    - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. CQRS (상단의 요구사항 참고) (ok)
-    - 배달상태가 바뀔때마다 카톡 등으로 알림을 줄 수 있어야 한다 Event driven (상단의 요구사항 참고) (ok)
+
 
 
     
@@ -74,9 +73,12 @@
 
 
     - 상점관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다. Async(event-driven), Eventual Consistency
-      => 주문(order)과 상점관리(store)는 별도의 마이크로서비스로, Req-Res 가 아닌 Pub-Sub 을 이용, Async 로 설계 (ok)
+        => 주문(order)과 상점관리(store)는 별도의 마이크로서비스로, Req-Res 가 아닌 Pub-Sub 을 이용, Async 로 설계 (ok)
     - 결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback
-      => 주문(order) 시 결제(pay)를 Sync(Req-Res) 로 호출, 이 부분에 Circuit breaker 와 fallback 설정 (ok) 
+        => 주문(order) 시 결제(pay)를 Sync(Req-Res) 로 호출, 이 부분에 Circuit breaker 와 fallback 설정 (ok) 
+      
+    - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. CQRS (상단의 요구사항 참고) (ok)
+    - 배달상태가 바뀔때마다 카톡 등으로 알림을 줄 수 있어야 한다 Event driven (상단의 요구사항 참고) (ok)
 
 
 
