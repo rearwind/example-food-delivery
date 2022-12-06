@@ -144,7 +144,8 @@ payment 구동 ( payment 폴더에서 mvn spring-boot:run) 후 주문 성공
             default:
                 execution.isolation.thread.timeoutInMilliseconds: 200
                 
-                
+ 
+ 
 order 서비스의 external 의 PaymentService.java (FeignClient) 에 fallback 설정 (PaymentServiceFallback.class)
 
     @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceFallback.class)
@@ -153,7 +154,24 @@ order 서비스의 external 의 PaymentService.java (FeignClient) 에 fallback �
         public void pay(@PathVariable("id") Long id, @RequestBody Payment payment);
     }
 
-PaymentServiceFallback.java
+
+PaymentServiceFallback.java 구현 - 안내 메시지 출력
+
+    package fooddelivery.external;
+
+    import org.springframework.stereotype.Service;
+
+    @Service
+    public class PaymentServiceFallback implements PaymentService{
+
+        @Override
+        public void pay(Long id, Payment payment) {
+
+            System.out.println("결제시스템이 과중된 상태입니다. 잠시 후 다시 결제해 주세요.");
+    
+        }
+    }
+
 
 
 결제 서비스를 호출(Sync) 시 결제 서비스 처리 성능이 느려지도록 딜레이 발생 코드 추가
@@ -167,8 +185,13 @@ PaymentServiceFallback.java
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
-부하 툴(siege)을 사용하여 주문을 넣으면 서킷 브레이커가 발동하여
+    
+    
+=> 
+
+timeout 임계치를 낮게 준 상태에서 부하 툴(siege)을 사용하여 주문을 넣으면 서킷 브레이커가 발동하고, fallback 되어 안내 메시지 출력함
+
+
 
 
 1. Gateway / Ingress
