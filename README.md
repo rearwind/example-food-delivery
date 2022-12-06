@@ -121,55 +121,14 @@ order 서비스의 external 의 PaymentService.java (FeignClient 로 결제 대�
 => 
 
 order 만 구동하고 payment 를 내린 상태에서는 주문 실패됨
+    
+![image](https://user-images.githubusercontent.com/119660065/205839533-51c1a384-ce61-4c8a-8599-3730409af59c.png)
 
-    http :8081/orders customerId="lee" qty=1 price=8000 address="seoul" foodId=1
-    HTTP/1.1 500 
-    Connection: close
-    Content-Type: application/json
-    Date: Tue, 06 Dec 2022 06:12:02 GMT
-    Transfer-Encoding: chunked
-    Vary: Origin
-    Vary: Access-Control-Request-Method
-    Vary: Access-Control-Request-Headers
 
-    {
-        "error": "Internal Server Error",
-        "message": "",
-        "path": "/orders",
-        "status": 500,
-        "timestamp": "2022-12-06T06:12:02.499+00:00"
-    }
+payment 구동 ( payment 폴더에서 mvn spring-boot:run) 후 주문 성공
 
-payment 구동 후 주문 성공
+![image](https://user-images.githubusercontent.com/119660065/205840381-da9bdd80-76c9-4583-a9c7-f1085285fd6d.png)
 
-    http :8081/orders customerId="lee" qty=1 price=8000 address="seoul" foodId=1
-    HTTP/1.1 201 
-    Connection: keep-alive
-    Content-Type: application/json
-    Date: Tue, 06 Dec 2022 06:16:38 GMT
-    Keep-Alive: timeout=60
-    Location: http://localhost:8081/orders/2
-    Transfer-Encoding: chunked
-    Vary: Origin
-    Vary: Access-Control-Request-Method
-    Vary: Access-Control-Request-Headers
-
-    {
-        "_links": {
-            "order": {
-                "href": "http://localhost:8081/orders/2"
-            },
-            "self": {
-                "href": "http://localhost:8081/orders/2"
-            }
-        },
-        "address": "seoul",
-        "customerId": "lee",
-        "foodId": 1,
-        "price": 8000,
-        "qty": 1,
-        "status": "주문됨"
-    }
 
 
 1. Circuit Breaker / Fallback
