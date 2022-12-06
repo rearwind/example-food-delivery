@@ -109,7 +109,7 @@ order 의 Order.java 에서 주문 직후 Payment Proxy (PaymentService) 의 pay
             .pay(getId(), payment);
 
 
-external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
+order 서비스의 external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
 
     @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceFallback.class)
     public interface PaymentService {
@@ -120,7 +120,7 @@ external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 
     
 => 
 
-- order 만 구동하고 payment 를 내린 상태에서는 주문 실패됨
+order 만 구동하고 payment 를 내린 상태에서는 주문 실패됨
 
     http :8081/orders customerId="lee" qty=1 price=8000 address="seoul" foodId=1
     HTTP/1.1 500 
@@ -140,7 +140,7 @@ external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 
         "timestamp": "2022-12-06T06:12:02.499+00:00"
     }
 
-- payment 구동 후 주문 성공
+payment 구동 후 주문 성공
 
     http :8081/orders customerId="lee" qty=1 price=8000 address="seoul" foodId=1
     HTTP/1.1 201 
@@ -172,13 +172,32 @@ external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 
     }
 
 
-1. Circuit Breaker
+1. Circuit Breaker / Fallback
 
-- 
+주문(order) 서비스의 resources 밑 application.yml 파일에서 서킷브레이커 enable = true 설정하고 임계치를 200ms 로 설정
     
+    feign:
+      hystrix:
+        enabled: true
+
+    hystrix:
+        command:
+            default:
+                execution.isolation.thread.timeoutInMilliseconds: 200
+                
+                
+order 서비스의 external 의 PaymentService.java (FeignClient) 에 fallback 설정 (PaymentServiceFallback.class)
+
+    @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceFallback.class)
+    public interface PaymentService {
+        @RequestMapping(method= RequestMethod.PUT, path="/payments/{id}/pay")
+        public void pay(@PathVariable("id") Long id, @RequestBody Payment payment);
+    }
+
+PaymentServiceFallback.java
 
 
-
+결제 서비스를 호출(Sync) 시 결제 서비스 처리 성능이 느려지도록 딜레이 발생 코드 추가
 
     @PrePersist
     public void onPrePersist(){
@@ -189,6 +208,8 @@ external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
+부하 툴(siege)을 사용하여 주문을 넣으면 서킷 브레이커가 발동하여
 
 
 1. Gateway / Ingress
