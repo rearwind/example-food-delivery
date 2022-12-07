@@ -95,29 +95,69 @@
 
 1. Request / Response
 
-order 의 Order.java 에서 주문 직후 Payment Proxy (PaymentService) 의 pay (결제) 호출 - Sync (Req/Res)
+order 의 Order.java 에서 주문 직후 payment 생성 및 프로퍼티 설정 후 Payment Proxy (PaymentService) 의 pay (결제) 호출 - Sync (Req/Res)
 
     @PostPersist
     public void onPostPersist(){
-        
+
+        //Following code causes dependency to external APIs
+        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+
+
         fooddelivery.external.Payment payment = new fooddelivery.external.Payment();
         payment.setOrderId(getId());
-        if (getPrice()!=null)
-            payment.setPrice(getPrice());
-
+        payment.setId(getId());
+        payment.setFoodId(getFoodId());
+        payment.setQty(getQty());        
+        payment.setCustomerId(getCustomerId());
+        payment.setStatus("주문됨");
+        // mappings goes here
         OrderApplication.applicationContext.getBean(fooddelivery.external.PaymentService.class)
-            .pay(getId(), payment);
+            .pay(payment);
+
+
+        OrderPlaced orderPlaced = new OrderPlaced();
+        orderPlaced.setId(getId());
+        orderPlaced.setFoodId(getFoodId());
+        orderPlaced.setQty(getQty());        
+        orderPlaced.setCustomerId(getCustomerId());        
+        orderPlaced.setStatus("주문됨");
+        orderPlaced.publishAfterCommit();
+
+    }
 
 
 order 서비스의 external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
 
-    @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceFallback.class)
+    @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceImpl.class)
     public interface PaymentService {
-        @RequestMapping(method= RequestMethod.PUT, path="/payments/{id}/pay")
-        public void pay(@PathVariable("id") Long id, @RequestBody Payment payment);
+        @RequestMapping(method= RequestMethod.POST, path="/payments")
+        public void pay(@RequestBody Payment payment);
     }
     
     
+결제(payment) 서비스의 Payment.java 에서 결제(pay) 호출 시 구현
+
+    @PrePersist
+    public void onPrePersist(){
+
+        if("cancel".equals(action)){
+            PayCancelled payCancelled = new PayCancelled();
+            BeanUtils.copyProperties(this, payCancelled);
+            payCancelled.publish();
+
+        }else{
+            PayAccepted payAccepted = new PayAccepted();
+            BeanUtils.copyProperties(this, payAccepted);
+
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void beforeCommit(boolean readOnly) {
+                    payAccepted.publish();
+                }
+            });
+
+
 => 
 
 order 만 구동하고 payment 를 내린 상태에서는 주문 실패됨
