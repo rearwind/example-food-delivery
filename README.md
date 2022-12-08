@@ -136,18 +136,43 @@
 ![image](https://user-images.githubusercontent.com/119660065/206370509-0753ab39-eac7-44cc-a92d-41ec5bcb3417.png)
 
 
+=> 작동
+
+    주문 서비스에서 주문
+    
+![image](https://user-images.githubusercontent.com/119660065/206383269-9a33d3bc-7900-46ed-b2ca-207b9580994f.png)
+
+    상점 서비스에 주문정보 생성됨
+    
+![image](https://user-images.githubusercontent.com/119660065/206383565-6dbab611-5c36-4b0f-92a1-d1aea9eac462.png)
+
+
 ## 2. CQRS
 
-    MyPage (CQRS)
-
-1. ReadModel : orderId , 상태(status) 
+    MyPage (CQRS) : orderId , 상태(status) 
 ![image](https://user-images.githubusercontent.com/119660065/206371658-eb13da07-90be-4164-89fd-7e2207d885e1.png)
 
-2. OrderPlaced 이벤트 발생 시 Create
+    OrderPlaced 이벤트 발생 시 Create
 ![image](https://user-images.githubusercontent.com/119660065/206371997-dfa8f6c4-0844-4136-a735-21beebc87e71.png)
 
-3. 주문상태 변경 이벤트 발생 시 Update
+    주문상태 변경 이벤트 발생 시 Update
 ![image](https://user-images.githubusercontent.com/119660065/206372168-cdaa3beb-8f31-4c56-b6e3-dd55158f2e88.png)
+
+
+=> 작동
+
+    주문 후 MyPage 조회하면 1번 주문이 "주문됨"으로 조회됨
+    
+![image](https://user-images.githubusercontent.com/119660065/206384456-3458707a-8fdc-4054-aa63-3d95872052ff.png)
+
+    상점에서 주문 수락하면 "수락됨"으로 조회됨
+    
+![image](https://user-images.githubusercontent.com/119660065/206385182-e61603b3-884d-468e-9d58-0b61757ba7d7.png)
+
+    상점에서 요리를 시작하면 "요리시작됨"으로 조회됨
+    
+![image](https://user-images.githubusercontent.com/119660065/206385613-77635db8-9c93-4e56-b832-d530a395e082.png)
+
 
 
 ## 3. Compensation / Correlation
@@ -166,6 +191,17 @@
 4. 요리, 배달 서비스는 상동
 
 
+=> 작동
+
+    현재 주문(1번 주문)은 배달 시작된 상태 (상점에서는 "요리완료됨", 배달에서는 "배달시작됨" 상태임)
+    
+    1번 주문에 대해 주문 서비스에서는 "주문취소됨", 결제 "결제취소됨", 상점 "요리취소됨", 배달 "배달취소됨"으로 상태 변경됨
+![image](https://user-images.githubusercontent.com/119660065/206388090-a1e98633-253a-4aef-9480-802773d3db3d.png)
+    
+![image](https://user-images.githubusercontent.com/119660065/206388368-3f457569-4fcd-4593-911f-323f059b95c0.png)
+
+![image](https://user-images.githubusercontent.com/119660065/206388458-c186b2b3-cd3a-43a4-9cc2-a5946ad84577.png)
+
 
 ## 4. Request / Response
 
@@ -178,18 +214,23 @@
 
 2. 주문 서비스의 external 의 PaymentService (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
 ![image](https://user-images.githubusercontent.com/119660065/206378328-933abdde-97d3-461b-9d3f-7e0a500ffb7c.png)
+
+
+=> 작동
+
+    order 는 구동하고 payment 는 구동하지 않은 상태에서 주문하면 주문 실패
     
-=> 
+![image](https://user-images.githubusercontent.com/119660065/206389600-817226a5-324a-4c6e-9fcf-e22c01f597fa.png)
 
-order 만 구동하고 payment 를 내린 상태에서는 주문 실패됨
+
+    payment 구동 
     
-![image](https://user-images.githubusercontent.com/119660065/205839533-51c1a384-ce61-4c8a-8599-3730409af59c.png)
+![image](https://user-images.githubusercontent.com/119660065/206390188-d770b81d-b9e7-4a1f-88ae-f085d5692e7d.png)
 
 
-payment 구동 ( payment 폴더에서 mvn spring-boot:run) 후 주문 성공
-
-![image](https://user-images.githubusercontent.com/119660065/205840381-da9bdd80-76c9-4583-a9c7-f1085285fd6d.png)
-
+    다시 주문하면 주문 성공
+    
+![image](https://user-images.githubusercontent.com/119660065/206390394-5389eb8d-e90f-49b8-bb1f-387df49e3182.png)
 
 
 ## 5. Circuit Breaker
@@ -198,7 +239,7 @@ payment 구동 ( payment 폴더에서 mvn spring-boot:run) 후 주문 성공
 
 
 
-결제 서비스를 호출(Sync) 시 결제 서비스 처리 성능이 느려지도록 딜레이 발생 코드 추가
+    결제 서비스를 호출(Sync) 시 결제 서비스 처리 성능이 느려지도록 딜레이 발생 코드 추가
 
     @PrePersist
     public void onPrePersist(){
@@ -211,11 +252,22 @@ payment 구동 ( payment 폴더에서 mvn spring-boot:run) 후 주문 성공
         }
     
     
-=> 
+=> 동작
 
-timeout 임계치를 낮게 준 상태에서 부하 툴(siege)을 사용하여 주문을 넣으면 서킷 브레이커가 발동하고, fallback 되어 안내 메시지 출력함
+    timeout 임계치를 600 으로 준 상태에서 부하 발생
+    
+    - siege -c2 -t10S  -v --content-type "application/json" 'http://localhost:8081/orders POST {"customerId":"khl", "qty":1, "foodId":1, "address":"seoul"}'
+    
+![image](https://user-images.githubusercontent.com/119660065/206393549-8241e0a6-2710-4873-b133-4309359e9aca.png)
 
+ 
+    timeout 임계치를 200 으로 낮게 준 상태에서 부하 발생하면 서킷 브레이커가 발동
 
+![image](https://user-images.githubusercontent.com/119660065/206394175-43031af1-aa4b-4da7-ab3d-20ce2b1ee481.png)
+
+![image](https://user-images.githubusercontent.com/119660065/206394292-ff0a3bb8-bf90-478b-96bc-a14ec98672d4.png)
+
+![image](https://user-images.githubusercontent.com/119660065/206394420-80e38199-ac3a-4bac-8925-60c381060b92.png)
 
 
 ## 6. Gateway / Ingress
