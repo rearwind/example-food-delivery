@@ -140,55 +140,45 @@
 
     MyPage (CQRS)
 
-1. 
+1. ReadModel : orderId , 상태(status) 
 ![image](https://user-images.githubusercontent.com/119660065/206371658-eb13da07-90be-4164-89fd-7e2207d885e1.png)
 
-2. 
+2. OrderPlaced 이벤트 발생 시 Create
 ![image](https://user-images.githubusercontent.com/119660065/206371997-dfa8f6c4-0844-4136-a735-21beebc87e71.png)
+
+3. 주문상태 변경 이벤트 발생 시 Update
 ![image](https://user-images.githubusercontent.com/119660065/206372168-cdaa3beb-8f31-4c56-b6e3-dd55158f2e88.png)
 
 
 ## 3. Compensation / Correlation
 
+    고객이 주문 후 취소 시 결제, 요리, 배달도 모두 취소하도록 Pub-Sub 으로 구현, orderId 를 키값으로 서비스 간 Correlation 구현
+    
+1. 주문 취소는 Rest(DELETE) 가 아닌 Command 로 하여, 삭제가 아닌 취소 상태로 변경하는 것으로 구현
+![image](https://user-images.githubusercontent.com/119660065/206376073-57ff644d-fb7a-496b-ad40-518ed2b2f7de.png)
+
+2. 주문을 취소하고, 해당 주문으로 OrderCancelled 이벤트를 생성하여 publish
+![image](https://user-images.githubusercontent.com/119660065/206376426-e9f50bda-d875-4600-add5-1d81252a032a.png)
+
+3. 결제 서비스는 OrderCancelled 이벤트 수신 시 해당 orderId 를 가진 결제의 상태를 "결제취소됨"으로 변경 후 PayCancelled 이벤트 발생
+![image](https://user-images.githubusercontent.com/119660065/206376745-6966af2d-179c-403d-8921-a9a904b68b5f.png)
+
+4. 요리, 배달 서비스는 상동
+
 
 
 ## 4. Request / Response
 
-order 의 Order.java 에서 주문 직후 payment 생성 및 속성 설정 후 Payment Proxy (PaymentService) 의 pay (결제) 호출 - Sync (Req/Res)
-
-
-
-order 서비스의 external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
-
-    @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceImpl.class)
-    public interface PaymentService {
-        @RequestMapping(method= RequestMethod.POST, path="/payments")
-        public void pay(@RequestBody Payment payment);
-    }
+    주문 직후 주문 서비스에서 결제 서비스로 결제 요청을 Req / Res 로 구현
     
     
-결제(payment) 서비스의 Payment.java 에서 결제(pay) 호출 시 구현
-
-    @PrePersist
-    public void onPrePersist(){
-
-        if("cancel".equals(action)){
-            PayCancelled payCancelled = new PayCancelled();
-            BeanUtils.copyProperties(this, payCancelled);
-            payCancelled.publish();
-
-        }else{
-            PayAccepted payAccepted = new PayAccepted();
-            BeanUtils.copyProperties(this, payAccepted);
-
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-                @Override
-                public void beforeCommit(boolean readOnly) {
-                    payAccepted.publish();
-                }
-            });
+1. 주문(OrderPlaced 이벤트 발생) 직후 Payment Proxy(PaymentService)의 pay(결제) 호출 - Sync (Req/Res)
+![image](https://user-images.githubusercontent.com/119660065/206377640-719f105e-272a-40f1-b1d3-aa63660f060d.png)
 
 
+2. 주문 서비스의 external 의 PaymentService (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
+![image](https://user-images.githubusercontent.com/119660065/206378328-933abdde-97d3-461b-9d3f-7e0a500ffb7c.png)
+    
 => 
 
 order 만 구동하고 payment 를 내린 상태에서는 주문 실패됨
@@ -204,44 +194,7 @@ payment 구동 ( payment 폴더에서 mvn spring-boot:run) 후 주문 성공
 
 ## 5. Circuit Breaker
 
-주문(order) 서비스의 resources 밑 application.yml 파일에서 서킷브레이커 enable = true 설정하고 임계치를 200ms 로 설정
-    
-    feign:
-      hystrix:
-        enabled: true
-
-    hystrix:
-        command:
-            default:
-                execution.isolation.thread.timeoutInMilliseconds: 200
-                
- 
- 
-order 서비스의 external 의 PaymentService.java (FeignClient) 에 fallback 설정 (PaymentServiceFallback.class)
-
-    @FeignClient(name = "payment", url = "${api.url.payment}", fallback = PaymentServiceFallback.class)
-    public interface PaymentService {
-        @RequestMapping(method= RequestMethod.PUT, path="/payments/{id}/pay")
-        public void pay(@PathVariable("id") Long id, @RequestBody Payment payment);
-    }
-
-
-PaymentServiceFallback.java 구현 - 안내 메시지 출력
-
-    package fooddelivery.external;
-
-    import org.springframework.stereotype.Service;
-
-    @Service
-    public class PaymentServiceFallback implements PaymentService{
-
-        @Override
-        public void pay(Long id, Payment payment) {
-
-            System.out.println("결제시스템이 과중된 상태입니다. 잠시 후 다시 결제해 주세요.");
-    
-        }
-    }
+서킷 브레이커 구현 - 상단의 "비기능 요구사항에 대한 검증" 참고
 
 
 
