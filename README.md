@@ -44,7 +44,8 @@
     - 주문이 되면 주문 내역이 입점상점주인에게 전달된다 (copy order info)
       (주문이 되면 미리 배송 서비스에도 주문정보를 전달한다)
 
- 
+----------
+
 ![image](https://user-images.githubusercontent.com/119660065/206340338-27c3d094-686b-4a43-907e-6292af7fa823.png)
 
     - 상점주는 주문을 수락하거나 거절할 수 있다 (1. 주문수락, 2. 주문거절) (ok)
@@ -78,13 +79,13 @@
 ### 비기능 요구사항에 대한 검증
 
 
-상점관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다. Async(event-driven), Eventual Consistency (ok)
-=> 주문(order)과 상점관리(store) 서비스는 별도의 마이크로서비스로, Req-Res 가 아닌 Pub-Sub 을 이용, Async 로 설계
+    - 상점관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다. Async(event-driven), Eventual Consistency (ok)
+      => 주문(order)과 상점관리(store) 서비스는 별도의 마이크로서비스로, Req-Res 가 아닌 Pub-Sub 을 이용, Async 로 설계
 
 ![image](https://user-images.githubusercontent.com/119660065/206354021-4d9772b6-ab4c-4b09-871a-0eaa8cc2bd6f.png)
 
 
-결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback (ok)
+    - 결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback (ok)
 
 1. order 에서 payment 서비스로 결제 요청 구간에 Circuit breaker 설정 
 
@@ -102,9 +103,8 @@
      
 ![image](https://user-images.githubusercontent.com/119660065/206362897-9b971964-d920-4422-8314-d4c5bfaa82b2.png)
 
+--------------
 
-=> 체크포인트 참고
-      
     - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. (ok)
       => 주문시스템 내 고객서비스(customer)의 MyPage(CQRS)에서 배달상태 확인 가능 (기능 요구사항 9번)
       
