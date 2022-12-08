@@ -265,8 +265,6 @@
 
 ![image](https://user-images.githubusercontent.com/119660065/206396953-cdfce711-57db-4e4b-baf0-0597a6b5c4ab.png)
 
-![image](https://user-images.githubusercontent.com/119660065/206394292-ff0a3bb8-bf90-478b-96bc-a14ec98672d4.png)
-
 ![image](https://user-images.githubusercontent.com/119660065/206394420-80e38199-ac3a-4bac-8925-60c381060b92.png)
 
 
