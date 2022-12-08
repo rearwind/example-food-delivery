@@ -261,9 +261,9 @@
 ![image](https://user-images.githubusercontent.com/119660065/206393549-8241e0a6-2710-4873-b133-4309359e9aca.png)
 
  
-    timeout 임계치를 200 으로 낮게 준 상태에서 부하 발생하면 서킷 브레이커가 발동
+    timeout 임계치를 520 으로 준 상태에서 부하 발생하면 실패 건수가 늘어나면서 서킷 브레이커 발동
 
-![image](https://user-images.githubusercontent.com/119660065/206394175-43031af1-aa4b-4da7-ab3d-20ce2b1ee481.png)
+![image](https://user-images.githubusercontent.com/119660065/206396953-cdfce711-57db-4e4b-baf0-0597a6b5c4ab.png)
 
 ![image](https://user-images.githubusercontent.com/119660065/206394292-ff0a3bb8-bf90-478b-96bc-a14ec98672d4.png)
 
@@ -271,5 +271,33 @@
 
 
 ## 6. Gateway / Ingress
+
+    Gateway 서비스는 :8088 포트로 코드 제너레이션할 때 자동으로 서비스 및 application.yml 생성되었음
+    
+    - gateway 의 application.yml
+    
+![image](https://user-images.githubusercontent.com/119660065/206397376-567b8e73-4a33-4899-bd85-79e12601f086.png)
+
+    쿠폰관리(couponMgmt)(http :8085/couponMgmts) 서비스 조회
+    
+![image](https://user-images.githubusercontent.com/119660065/206402016-6a6f7115-3fec-44fd-a59a-2b5e9461a5e2.png)
+
+    쿠폰관리 서비스를 통해 서비스에 가입해본다. (http :8085/couponMgmts customerId="khl")
+    
+![image](https://user-images.githubusercontent.com/119660065/206403686-74b56c29-eecb-44dd-9afa-7becdc664c47.png)
+
+    gateway를 통해 쿠폰관리 서비스에 가입한다. (http :8088/couponMgmts customerId="lee" orderCount=0)
+    
+![image](https://user-images.githubusercontent.com/119660065/206404232-b904b5d7-4607-45d4-a71a-6532caaa02ea.png)
+
+    새로운 브라우저를 열고 쿠폰관리 서비스에 접속해본다 => 접속할 수 없음
+
+![image](https://user-images.githubusercontent.com/119660065/206405274-2b9080e8-c3f3-448b-9fa1-5bd827e459b1.png)
+
+    게이트웨이를 public 으로 설정 후 새 브라우저에서 게이트웨이를 통해 쿠폰관리 서비스에 접속해본다 
+    
+![image](https://user-images.githubusercontent.com/119660065/206405566-8f830581-4756-452b-b553-bec0524484ba.png)
+
+![image](https://user-images.githubusercontent.com/119660065/206406221-8ec5bb7b-259b-4802-8d7a-ccb9264f4ac8.png)
 
 
