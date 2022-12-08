@@ -82,13 +82,30 @@
 
     - 상점관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다. Async(event-driven), Eventual Consistency (ok)
       => 주문(order)과 상점관리(store) 서비스는 별도의 마이크로서비스로, Req-Res 가 아닌 Pub-Sub 을 이용, Async 로 설계
-      => 체크포인트 참고
       
-      
+    
 ![image](https://user-images.githubusercontent.com/119660065/206360037-36e77232-1039-4a65-ae31-4ea82f3a8be0.png)
-      
+
+# Circuit breaker : order 서비스의 application.yml 에 Circuit breaker enable = true 로 설정
+
+![image](https://user-images.githubusercontent.com/119660065/206361607-ff64c2ad-2e16-46cb-af30-eae0bb9a9d33.png)
+![image](https://user-images.githubusercontent.com/119660065/206362897-9b971964-d920-4422-8314-d4c5bfaa82b2.png)
+
+
+# fallback : order 의 external/PaymentService.java(인터페이스) 에 fallback 설정, PaymentServiceImpl.java 에 fallback 구현
+
+
+
+
     - 결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback (ok)
-      => 주문(order) 시 결제(pay)를 Sync(Req-Res) 로 호출, 이 부분에 Circuit breaker 와 fallback 설정 
+      => 주문(order) 시 결제(pay)를 Sync(Req-Res) 로 호출, 이 부분에 Circuit breaker 설정
+      
+      ![image](https://user-images.githubusercontent.com/119660065/206361607-ff64c2ad-2e16-46cb-af30-eae0bb9a9d33.png)
+      
+      
+      => fallback 설정 
+      
+      ![image](https://user-images.githubusercontent.com/119660065/206362454-f2eb12ec-fe3b-4a59-b873-7ff309e278a4.png)
       => 체크포인트 참고
       
     - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. (ok)
