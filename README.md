@@ -110,64 +110,44 @@
 # 
 
     - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. (ok)
-      => 주문시스템 내 고객서비스(customer)의 MyPage(CQRS)에서 배달상태 확인 가능 (기능 요구사항 9번)
+      => 주문시스템 내 고객서비스(customer)에 MyPage 를 CQRS 로 모델링하여 Read 성능 고려 (기능 요구사항 9번 참고)
       
     - 배달상태가 바뀔때마다 카톡 등으로 알림을 줄 수 있어야 한다 Event driven (ok)
-      => 상단의 기능 요구사항 10번에 해당
+      => 주문 및 배달 이벤트 발생 시마다 알림 (기능 요구사항 10번 참고)
     
-
-
 
 - 모델은 모든 기능/비기능 요구사항을 커버함.
 
 
 # 체크포인트
 
-1. Saga (Pub / Sub)
 ## 1. Saga (Pub / Sub)
 
+    주문(order) 서비스에서 결제 후 OrderPlaced event 를 Publish
+    
+![image](https://user-images.githubusercontent.com/119660065/206369736-7dff1c68-fcac-4f70-94db-0b45d59a8bff.png)
+    
+    상점(store) 서비스는 이 이벤트를 Subscribe 하고, 이벤트 수신 시 주문정보 생성
 
- 
-1. CQRS
-
-
-
-1. Compensation / Correlation
-
-
-
-1. Request / Response
-
-order 의 Order.java 에서 주문 직후 payment 생성 및 프로퍼티 설정 후 Payment Proxy (PaymentService) 의 pay (결제) 호출 - Sync (Req/Res)
-
-    @PostPersist
-    public void onPostPersist(){
-
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+1.
+![image](https://user-images.githubusercontent.com/119660065/206370247-be2b7d43-3f1e-49a9-8167-285758de6049.png)
+    
+2.
+![image](https://user-images.githubusercontent.com/119660065/206370509-0753ab39-eac7-44cc-a92d-41ec5bcb3417.png)
 
 
-        fooddelivery.external.Payment payment = new fooddelivery.external.Payment();
-        payment.setOrderId(getId());
-        payment.setId(getId());
-        payment.setFoodId(getFoodId());
-        payment.setQty(getQty());        
-        payment.setCustomerId(getCustomerId());
-        payment.setStatus("주문됨");
-        // mappings goes here
-        OrderApplication.applicationContext.getBean(fooddelivery.external.PaymentService.class)
-            .pay(payment);
+## 2. CQRS
 
 
-        OrderPlaced orderPlaced = new OrderPlaced();
-        orderPlaced.setId(getId());
-        orderPlaced.setFoodId(getFoodId());
-        orderPlaced.setQty(getQty());        
-        orderPlaced.setCustomerId(getCustomerId());        
-        orderPlaced.setStatus("주문됨");
-        orderPlaced.publishAfterCommit();
 
-    }
+## 3. Compensation / Correlation
+
+
+
+## 4. Request / Response
+
+order 의 Order.java 에서 주문 직후 payment 생성 및 속성 설정 후 Payment Proxy (PaymentService) 의 pay (결제) 호출 - Sync (Req/Res)
+
 
 
 order 서비스의 external 의 PaymentService.java (FeignClient 로 결제 대행 인터페이스 정의 => 인터페이스를 통해 payment 의 pay 가 호출됨)
@@ -214,7 +194,7 @@ payment 구동 ( payment 폴더에서 mvn spring-boot:run) 후 주문 성공
 
 
 
-1. Circuit Breaker / Fallback
+## 5. Circuit Breaker
 
 주문(order) 서비스의 resources 밑 application.yml 파일에서 서킷브레이커 enable = true 설정하고 임계치를 200ms 로 설정
     
@@ -277,6 +257,6 @@ timeout 임계치를 낮게 준 상태에서 부하 툴(siege)을 사용하여 �
 
 
 
-1. Gateway / Ingress
+## 6. Gateway / Ingress
 
 
