@@ -299,3 +299,4 @@
 ![image](https://user-images.githubusercontent.com/119660065/206406221-8ec5bb7b-259b-4802-8d7a-ccb9264f4ac8.png)
 
 
+    나머지 서비스들도 게이트웨이를 거쳐 호출 가능
