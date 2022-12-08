@@ -96,11 +96,11 @@
 
 3. order 의 external/PaymentService.java 에 fallback (PaymentServiceImpl) 구현체 설정
 
-![image](https://user-images.githubusercontent.com/119660065/206362897-9b971964-d920-4422-8314-d4c5bfaa82b2.png)
+![image](https://user-images.githubusercontent.com/119660065/206364976-945ef0c9-e5d8-4751-900a-06c6e0a17786.png)
 
 4. PaymentServiceImpl.java 에 fallback 구현
      
-![image](https://user-images.githubusercontent.com/119660065/206362454-f2eb12ec-fe3b-4a59-b873-7ff309e278a4.png)
+![image](https://user-images.githubusercontent.com/119660065/206362897-9b971964-d920-4422-8314-d4c5bfaa82b2.png)
 
 
 => 체크포인트 참고
