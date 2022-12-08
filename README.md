@@ -57,13 +57,22 @@
 ![image](https://user-images.githubusercontent.com/119660065/206341757-2062fd1e-f67f-403f-9eda-072eb38ed6a2.png)
          
     - 고객이 주문상태를 중간중간 조회한다. (cqrs(MyPage) 이용) (ok)
-    - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (notification으로 주문수락, 주문거절, 요리시작, 요리완료, 배달시작, 주문취소(payCancelled) 시 카톡 알림) (ok)
+    - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (ok) 
+      => 주문수락, 주문거절, 요리시작, 요리완료, 배달시작(picked), 결제취소 이벤트 발생 시 notify
     
     
-![image](https://user-images.githubusercontent.com/119660065/205821826-bb93d696-f32e-4aab-8b88-e4c2fde0fc7b.png)    
     
-    - 고객은 아직 요리가 시작되지 않은 주문은 취소할 수 있다 (cancel -> 결제취소 -> 요리취소(cancel) 및 재고증가(increase) 및 알림) (ok)
-    - 주문 취소 시 해당 음식(food)의 재고가 주문수량만큼 늘어난다(원복된다). (ok)
+![image](https://user-images.githubusercontent.com/119660065/206352401-12b3343a-3add-4547-b8d6-0f2a55cd7945.png)
+      
+    - 고객은 쿠폰관리 프로그램에 가입할 수 있다. (sign up) (ok)
+    - 2번째 배달완료된 주문마다 쿠폰이 발행된다. (issue coupon -> 매 2번째 주문이면 쿠폰 발행 -> 알림) (ok)
+    
+
+
+![image](https://user-images.githubusercontent.com/119660065/206352957-5ccd877f-ff30-4ac8-83b7-7bfd65732de5.png)
+        
+    - 고객은 어느 때에도 주문을 취소할 수 있다. 주문취소 시 결제, 요리, 배달이 취소되어야 한다. (ok)
+      => cancel -> 결제취소 -> 요리취소 -> 배달취소 
 
 
 
