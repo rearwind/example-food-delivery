@@ -138,6 +138,14 @@
 
 ## 2. CQRS
 
+    MyPage (CQRS)
+
+1. 
+![image](https://user-images.githubusercontent.com/119660065/206371658-eb13da07-90be-4164-89fd-7e2207d885e1.png)
+
+2. 
+![image](https://user-images.githubusercontent.com/119660065/206371997-dfa8f6c4-0844-4136-a735-21beebc87e71.png)
+![image](https://user-images.githubusercontent.com/119660065/206372168-cdaa3beb-8f31-4c56-b6e3-dd55158f2e88.png)
 
 
 ## 3. Compensation / Correlation
