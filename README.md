@@ -44,7 +44,7 @@
     - 주문이 되면 주문 내역이 입점상점주인에게 전달된다 (copy order info)
       (주문이 되면 미리 배송 서비스에도 주문정보를 전달한다)
 
-----------
+    ----------
 
 ![image](https://user-images.githubusercontent.com/119660065/206340338-27c3d094-686b-4a43-907e-6292af7fa823.png)
 
