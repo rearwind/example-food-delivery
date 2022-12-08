@@ -47,25 +47,24 @@
  
 ![image](https://user-images.githubusercontent.com/119660065/206340338-27c3d094-686b-4a43-907e-6292af7fa823.png)
 
-    - 상점주는 주문을 수락하거나 거절할 수 있다 ( 1. 주문수락, 2. 주문거절 ) (ok)
-    - 상점주는 요리시작때와 완료 시점에 시스템에 상태를 입력한다 (3. 요리시작 입력, 4. 요리완료 입력 ) (ok)
+    - 상점주는 주문을 수락하거나 거절할 수 있다 (1. 주문수락, 2. 주문거절) (ok)
+    - 상점주는 요리시작때와 완료 시점에 시스템에 상태를 입력한다 (3. 요리시작 입력, 4. 요리완료 입력) (ok)
     - 요리가 완료되면 고객의 지역 인근의 라이더들에 의해 배송건 조회가 가능하다 (4. 요리완료 입력 -> 배송 서비스에서 주문상태 업데이트) (ok)
-    - 라이더가 해당 요리를 Pick한 후, 앱을 통해 통보한다. (4. pick -> notify ) (ok)
+    - 라이더가 해당 요리를 Pick한 후, 앱을 통해 통보한다. (4. pick -> notify) (ok)
     - 고객이 요리를 배달 받으면 배송확인 버튼을 탭하여, 모든 거래가 완료된다 (4. confirm delivered) (ok)
    
        
 ![image](https://user-images.githubusercontent.com/119660065/206341757-2062fd1e-f67f-403f-9eda-072eb38ed6a2.png)
          
-    - 고객이 주문상태를 중간중간 조회한다. (cqrs(MyPage) 이용) (ok)
+    - 고객이 주문상태를 중간중간 조회한다. (1. cqrs(MyPage) 이용) (ok)
     - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (ok) 
-      => 주문수락, 주문거절, 요리시작, 요리완료, 배달시작(picked), 결제취소 이벤트 발생 시 notify
-    
+      => 2. 주문수락, 주문거절, 요리시작, 요리완료, 배달시작(picked), 결제취소 이벤트 발생 시 notify
     
     
 ![image](https://user-images.githubusercontent.com/119660065/206352401-12b3343a-3add-4547-b8d6-0f2a55cd7945.png)
       
-    - 고객은 쿠폰관리 프로그램에 가입할 수 있다. (sign up) (ok)
-    - 2번째 배달완료된 주문마다 쿠폰이 발행된다. (issue coupon -> 매 2번째 주문이면 쿠폰 발행 -> 알림) (ok)
+    - 고객은 쿠폰관리 프로그램에 가입할 수 있다. (1. sign up) (ok)
+    - 2번째 배달완료된 주문마다 쿠폰이 발행된다. (2. 배달완료 -> issue coupon -> 매 2번째 주문이면 쿠폰 발행 -> 알림) (ok)
     
 
 
@@ -78,15 +77,26 @@
 
 ### 비기능 요구사항에 대한 검증
 
-![image](https://user-images.githubusercontent.com/119660065/205824481-2ed85be4-994d-421a-9906-4e4a9d580a82.png)
 
-    - 상점관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다. Async(event-driven), Eventual Consistency
-        => 주문(order)과 상점관리(store)는 별도의 마이크로서비스로, Req-Res 가 아닌 Pub-Sub 을 이용, Async 로 설계 (ok)
-    - 결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback
-        => 주문(order) 시 결제(pay)를 Sync(Req-Res) 로 호출, 이 부분에 Circuit breaker 와 fallback 설정 (ok) 
+![image](https://user-images.githubusercontent.com/119660065/206354021-4d9772b6-ab4c-4b09-871a-0eaa8cc2bd6f.png)
+
+    - 상점관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다. Async(event-driven), Eventual Consistency (ok)
+      => 주문(order)과 상점관리(store) 서비스는 별도의 마이크로서비스로, Req-Res 가 아닌 Pub-Sub 을 이용, Async 로 설계
+      => 체크포인트 참고
       
-    - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. CQRS (상단의 요구사항 참고) (ok)
-    - 배달상태가 바뀔때마다 카톡 등으로 알림을 줄 수 있어야 한다 Event driven (상단의 요구사항 참고) (ok)
+      
+![image](https://user-images.githubusercontent.com/119660065/206360037-36e77232-1039-4a65-ae31-4ea82f3a8be0.png)
+      
+    - 결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback (ok)
+      => 주문(order) 시 결제(pay)를 Sync(Req-Res) 로 호출, 이 부분에 Circuit breaker 와 fallback 설정 
+      => 체크포인트 참고
+      
+    - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. (ok)
+      => 주문시스템 내 고객서비스(customer)의 MyPage(CQRS)에서 배달상태 확인 가능 (기능 요구사항 9번)
+      
+    - 배달상태가 바뀔때마다 카톡 등으로 알림을 줄 수 있어야 한다 Event driven (ok)
+      => 상단의 기능 요구사항 10번에 해당
+    
 
 
 
