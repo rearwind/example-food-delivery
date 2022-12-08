@@ -54,6 +54,7 @@
     - 라이더가 해당 요리를 Pick한 후, 앱을 통해 통보한다. (4. pick -> notify) (ok)
     - 고객이 요리를 배달 받으면 배송확인 버튼을 탭하여, 모든 거래가 완료된다 (4. confirm delivered) (ok)
    
+# 
        
 ![image](https://user-images.githubusercontent.com/119660065/206341757-2062fd1e-f67f-403f-9eda-072eb38ed6a2.png)
          
@@ -61,13 +62,14 @@
     - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (ok) 
       => 2. 주문수락, 주문거절, 요리시작, 요리완료, 배달시작(picked), 결제취소 이벤트 발생 시 notify
     
-    
+# 
+
 ![image](https://user-images.githubusercontent.com/119660065/206352401-12b3343a-3add-4547-b8d6-0f2a55cd7945.png)
       
     - 고객은 쿠폰관리 프로그램에 가입할 수 있다. (1. sign up) (ok)
     - 2번째 배달완료된 주문마다 쿠폰이 발행된다. (2. 배달완료 -> issue coupon -> 매 2번째 주문이면 쿠폰 발행 -> 알림) (ok)
     
-
+# 
 
 ![image](https://user-images.githubusercontent.com/119660065/206352957-5ccd877f-ff30-4ac8-83b7-7bfd65732de5.png)
         
@@ -84,6 +86,7 @@
 
 ![image](https://user-images.githubusercontent.com/119660065/206354021-4d9772b6-ab4c-4b09-871a-0eaa8cc2bd6f.png)
 
+# 
 
     - 결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback (ok)
 
@@ -103,7 +106,8 @@
      
 ![image](https://user-images.githubusercontent.com/119660065/206362897-9b971964-d920-4422-8314-d4c5bfaa82b2.png)
 
---------------
+
+# 
 
     - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. (ok)
       => 주문시스템 내 고객서비스(customer)의 MyPage(CQRS)에서 배달상태 확인 가능 (기능 요구사항 9번)
@@ -120,6 +124,7 @@
 # 체크포인트
 
 1. Saga (Pub / Sub)
+## Saga (Pub / Sub)
 
 
  
