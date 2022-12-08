@@ -124,7 +124,7 @@
 # 체크포인트
 
 1. Saga (Pub / Sub)
-## Saga (Pub / Sub)
+## 1. Saga (Pub / Sub)
 
 
  
