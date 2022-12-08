@@ -36,7 +36,7 @@
 
 ### 완성된 모델에 대한 기능적/비기능적 요구사항을 커버하는지 검증
 
-
+ 
 ![image](https://user-images.githubusercontent.com/119660065/206336266-7feb99b5-9534-4a23-a771-764808f8385f.png)
 
     - 고객이 메뉴를 선택하여 주문한다 (order) (ok)
@@ -44,21 +44,20 @@
     - 주문이 되면 주문 내역이 입점상점주인에게 전달된다 (copy order info)
       (주문이 되면 미리 배송 서비스에도 주문정보를 전달한다)
 
-
+ 
 ![image](https://user-images.githubusercontent.com/119660065/206340338-27c3d094-686b-4a43-907e-6292af7fa823.png)
 
     - 상점주는 주문을 수락하거나 거절할 수 있다 ( 1. 주문수락, 2. 주문거절 ) (ok)
     - 상점주는 요리시작때와 완료 시점에 시스템에 상태를 입력한다 (3. 요리시작 입력, 4. 요리완료 입력 ) (ok)
     - 요리가 완료되면 고객의 지역 인근의 라이더들에 의해 배송건 조회가 가능하다 (4. 요리완료 입력 -> 배송 서비스에서 주문상태 업데이트) (ok)
-    - 라이더가 해당 요리를 Pick한 후, 앱을 통해 통보한다. (4. pick ) (ok)
+    - 라이더가 해당 요리를 Pick한 후, 앱을 통해 통보한다. (4. pick -> notify ) (ok)
     - 고객이 요리를 배달 받으면 배송확인 버튼을 탭하여, 모든 거래가 완료된다 (4. confirm delivered) (ok)
    
-      
-      
-    - 라이더가 해당 요리를 Pick한 후, 앱을 통해 통보한다. (pick command 시 picked(배달시작) 이벤트 발생 => 카톡 알림)
+       
+![image](https://user-images.githubusercontent.com/119660065/206341757-2062fd1e-f67f-403f-9eda-072eb38ed6a2.png)
+         
     - 고객이 주문상태를 중간중간 조회한다. (cqrs(MyPage) 이용) (ok)
     - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (notification으로 주문수락, 주문거절, 요리시작, 요리완료, 배달시작, 주문취소(payCancelled) 시 카톡 알림) (ok)
-    - 고객이 요리를 배달 받으면 배송확인 버튼을 탭하여, 모든 거래가 완료된다 (confirmdelivered command 로 delivered 이벤트 발생, 거래 완료) (ok)
     
     
 ![image](https://user-images.githubusercontent.com/119660065/205821826-bb93d696-f32e-4aab-8b88-e4c2fde0fc7b.png)    
