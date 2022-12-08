@@ -100,12 +100,10 @@
 
 4. PaymentServiceImpl.java 에 fallback 구현
      
-![image](https://user-images.githubusercontent.com/119660065/206361607-ff64c2ad-2e16-46cb-af30-eae0bb9a9d33.png)
-      
-      
-   
 ![image](https://user-images.githubusercontent.com/119660065/206362454-f2eb12ec-fe3b-4a59-b873-7ff309e278a4.png)
-      => 체크포인트 참고
+
+
+=> 체크포인트 참고
       
     - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. (ok)
       => 주문시스템 내 고객서비스(customer)의 MyPage(CQRS)에서 배달상태 확인 가능 (기능 요구사항 9번)
