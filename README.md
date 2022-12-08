@@ -86,27 +86,25 @@
 
 결제시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시 후에 하도록 유도한다. Circuit breaker, fallback (ok)
 
-1. order 서비스의 application.yml 에 Circuit breaker enable = true 로 설
+1. order 에서 payment 서비스로 결제 요청 구간에 Circuit breaker 설정 
 
 ![image](https://user-images.githubusercontent.com/119660065/206360037-36e77232-1039-4a65-ae31-4ea82f3a8be0.png)
 
+2. order 서비스의 application.yml 에 Circuit breaker enable = true 로 설정
 
-2. order 의 external/PaymentService.java 에 fallback 설정, PaymentServiceImpl.java 에 fallback 구현
-
-    1. PaymentService (인터페이스)
 ![image](https://user-images.githubusercontent.com/119660065/206361607-ff64c2ad-2e16-46cb-af30-eae0bb9a9d33.png)
 
-    2. PaymentService (인터페이스)
+3. order 의 external/PaymentService.java 에 fallback (PaymentServiceImpl) 구현체 설정
+
 ![image](https://user-images.githubusercontent.com/119660065/206362897-9b971964-d920-4422-8314-d4c5bfaa82b2.png)
 
-    3. PaymentServiceImpl
+4. PaymentServiceImpl.java 에 fallback 구현
      
 ![image](https://user-images.githubusercontent.com/119660065/206361607-ff64c2ad-2e16-46cb-af30-eae0bb9a9d33.png)
       
       
-      => fallback 설정 
-      
-      ![image](https://user-images.githubusercontent.com/119660065/206362454-f2eb12ec-fe3b-4a59-b873-7ff309e278a4.png)
+   
+![image](https://user-images.githubusercontent.com/119660065/206362454-f2eb12ec-fe3b-4a59-b873-7ff309e278a4.png)
       => 체크포인트 참고
       
     - 고객이 자주 상점관리에서 확인할 수 있는 배달상태를 주문시스템(프론트엔드)에서 확인할 수 있어야 한다. (ok)
